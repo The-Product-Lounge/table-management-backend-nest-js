@@ -5,28 +5,26 @@ export type TableDocument = HydratedDocument<Table>;
 
 @Schema()
 class User {
-  @Prop()
+  @Prop({ required: true })
   firstName: String;
-  @Prop()
+  @Prop({ required: true })
   lastName: String;
-  @Prop()
+  @Prop({ required: true })
   imgUrl: String;
-  @Prop()
+  @Prop({ required: true })
   id: String;
 }
 
 @Schema({ collection: 'table' })
 export class Table {
-  @Prop([User])
+  @Prop({ type: [Object], required: true })
   users: User[];
 
-  @Prop()
+  @Prop({ required: true })
   portfolioStage: string;
 
-  @Prop()
+  @Prop({ required: true })
   tableNumber: number;
 }
-
-
 
 export const TableSchema = SchemaFactory.createForClass(Table);
