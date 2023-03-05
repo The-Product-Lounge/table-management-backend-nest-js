@@ -8,7 +8,7 @@ export class TableController {
 
   @Get()
   getTables() {
-    return 'Hi'
+    return this.tableService.getTables()
   }
 
   @Get('/:id')
