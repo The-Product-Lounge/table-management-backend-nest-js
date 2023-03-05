@@ -1,6 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { UserDto } from '../dto';
 
 export type TableDocument = HydratedDocument<Table>;
 

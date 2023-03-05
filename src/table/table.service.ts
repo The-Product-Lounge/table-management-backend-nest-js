@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
-import { Table, TableDocument } from './schema/table.schema';
+import {  InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Table, TableDocument } from 'src/schemas/table.schema';
 
 @Injectable()
 export class TableService {
   constructor(
     @InjectModel(Table.name) private tableModel: Model<TableDocument>,
-    @InjectConnection() private connection: Connection,
   ) {}
 
   async getTables(): Promise<Table[]> {

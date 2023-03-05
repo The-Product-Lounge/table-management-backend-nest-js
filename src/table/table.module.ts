@@ -1,8 +1,8 @@
-import { Table, TableSchema } from './schema/table.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 import { TableController } from './table.controller';
 import { TableService } from './table.service';
+import { Table, TableSchema } from 'src/schemas/table.schema';
 
 @Module({
   imports: [
