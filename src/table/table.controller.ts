@@ -1,38 +1,46 @@
 import { UserDto, TableDto } from './dto';
 import { TableService } from './table.service';
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Param,
+} from '@nestjs/common';
 
 @Controller('table')
 export class TableController {
   constructor(private tableService: TableService) {}
 
   @Get()
-  getTables() {
-    return this.tableService.getTables()
+  getAll() {
+    return this.tableService.getAll();
   }
 
   @Get('/:id')
-  getTableById() {
-    return 'get by id'
+  getById(@Param('id') id: string) {
+    return this.tableService.getById(id);
+  }
+
+  @Put('/:id')
+  update(@Body() dto: TableDto) {
+    return this.tableService.update(dto);
+  }
+
+  @Delete('/:id')
+  delete() {
+    return 'delete table';
   }
 
   @Post('/join-table')
   joinTable(@Body() dto: UserDto) {
-    return dto
-  }
-
-  @Put('/:id')
-  updateTable(@Body() dto: TableDto) {
-    return dto
+    return dto;
   }
 
   @Delete('/delete-tables')
   deleteTables() {
-    return 'delete tables'
-  }
-
-  @Delete('/:id')
-  deleteTable() {
-    return 'delete table'
+    return 'delete tables';
   }
 }
