@@ -23,12 +23,16 @@ export class TableService {
 
   async update(dto: TableDto) {
     //returns number of docs modified
-    return this.tableModel.updateOne({_id: dto._id}, dto).exec();
+    return this.tableModel.updateOne({ _id: dto._id }, dto).exec();
   }
 
-  async delete() {}
+  async delete(id: string) {
+    return this.tableModel.deleteOne({ _id: id });
+  }
+
+  async deleteAll() {
+    return this.tableModel.deleteMany({});
+  }
 
   async joinTable() {}
-
-  async deleteTables() {}
 }

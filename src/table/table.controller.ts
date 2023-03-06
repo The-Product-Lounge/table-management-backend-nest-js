@@ -19,28 +19,28 @@ export class TableController {
     return this.tableService.getAll();
   }
 
-  @Get('/:id')
+  @Get(':id')
   getById(@Param('id') id: string) {
     return this.tableService.getById(id);
   }
 
-  @Put('/:id')
+  @Put(':id')
   update(@Body() dto: TableDto) {
     return this.tableService.update(dto);
   }
 
-  @Delete('/:id')
-  delete() {
-    return 'delete table';
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.tableService.delete(id);
   }
 
-  @Post('/join-table')
+  @Delete()
+  deleteAll() {
+    return this.tableService.deleteAll();
+  }
+
+  @Post('join-table')
   joinTable(@Body() dto: UserDto) {
     return dto;
-  }
-
-  @Delete('/delete-tables')
-  deleteTables() {
-    return 'delete tables';
   }
 }
