@@ -15,7 +15,7 @@ class User {
   id: String;
 }
 
-@Schema({ collection: 'table' })
+@Schema({ collection: 'table' , versionKey: false })
 export class Table {
   @Prop({ type: [Object], required: true })
   users: User[];

@@ -41,6 +41,6 @@ export class TableController {
 
   @Post('join-table')
   joinTable(@Body() dto: UserDto) {
-    return dto;
+    return this.tableService.joinTable(dto);
   }
 }
