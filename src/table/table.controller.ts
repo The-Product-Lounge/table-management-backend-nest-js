@@ -29,14 +29,14 @@ export class TableController {
     return this.tableService.update(dto);
   }
 
+  @Delete('/delete-tables')
+  deleteAll() {
+    return this.tableService.deleteAll();
+  }
+
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.tableService.delete(id);
-  }
-
-  @Delete()
-  deleteAll() {
-    return this.tableService.deleteAll();
   }
 
   @Post('join-table')
