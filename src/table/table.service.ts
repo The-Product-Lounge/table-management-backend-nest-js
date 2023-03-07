@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Table, TableDocument } from 'src/schemas/table.schema';
 import { TableDto } from './dto';
+import { InjectQueue } from '@nestjs/bull/dist/decorators';
+import { Queue } from 'bull';
 
 @Injectable()
 export class TableService {
@@ -38,35 +40,35 @@ export class TableService {
   }
 
   async joinTable(user: UserDto) {
-    const { portfolioStage } = user;
-    delete user.portfolioStage;
-    const table = await this.tableModel.findOne({
-      portfolioStage,
-      'users.3': { $exists: false },
-    });
-    if (!table) {
-      const tables = await this.tableModel.find().sort({ tableNumber: 1 });
-
-      let tableNumber = 1;
-      for (let index = 0; index < tables.length; index++) {
-        const table = tables[index];
-        if (table.tableNumber === tableNumber) tableNumber++;
-        else break;
-      }
-
-      const newTable = {
-        users: [user],
+      const { portfolioStage } = user;
+      delete user.portfolioStage;
+      const table = await this.tableModel.findOne({
         portfolioStage,
-        tableNumber,
-      };
+        'users.3': { $exists: false },
+      });
+      if (!table) {
+        const tables = await this.tableModel.find().sort({ tableNumber: 1 });
 
-      return this.tableModel.create(newTable);
-    } else {
-      table.users.push(user);
-      let tableId = table._id;
+        let tableNumber = 1;
+        for (let index = 0; index < tables.length; index++) {
+          const table = tables[index];
+          if (table.tableNumber === tableNumber) tableNumber++;
+          else break;
+        }
 
-      await this.tableModel.updateOne({ _id: tableId }, table).exec();
-      return table;
-    }
+        const newTable = {
+          users: [user],
+          portfolioStage,
+          tableNumber,
+        };
+
+        return this.tableModel.create(newTable);
+      } else {
+        table.users.push(user);
+        let tableId = table._id;
+
+        await this.tableModel.updateOne({ _id: tableId }, table).exec();
+        return table;
+      }
   }
 }

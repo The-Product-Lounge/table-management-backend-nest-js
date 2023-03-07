@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { UserDto, TableDto } from './dto';
 import { TableService } from './table.service';
 import {
@@ -9,10 +10,14 @@ import {
   Put,
   Param,
 } from '@nestjs/common';
+import { Queue } from 'bull';
 
 @Controller('table')
 export class TableController {
-  constructor(private tableService: TableService) {}
+  constructor(
+    private tableService: TableService,
+    @InjectQueue('table') private readonly tableQueue: Queue,
+  ) {}
 
   @Get()
   getAll() {
@@ -40,7 +45,8 @@ export class TableController {
   }
 
   @Post('join-table')
-  joinTable(@Body() dto: UserDto) {
-    return this.tableService.joinTable(dto);
+  async joinTable(@Body() dto: UserDto) {
+    await this.tableQueue.add('join-table', dto)
+    return 'adding to table';
   }
 }
