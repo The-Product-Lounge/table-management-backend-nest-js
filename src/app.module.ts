@@ -3,7 +3,7 @@ import { TableModule } from './table/table.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
-import { TableConsumer } from './table/table-consumer';
+import { FirebaseService } from './firebase/firebase.service';
 
 @Module({
   imports: [
@@ -22,6 +22,6 @@ import { TableConsumer } from './table/table-consumer';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [FirebaseService],
 })
 export class AppModule {}

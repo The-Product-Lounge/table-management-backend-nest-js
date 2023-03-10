@@ -1,3 +1,4 @@
+import { FirebaseService } from '../firebase/firebase.service';
 import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { UserDto, TableDto } from './dto';
 import { TableService } from './table.service';
@@ -24,13 +25,14 @@ export class TableController {
     return this.tableService.getAll();
   }
 
-  @Get(':id')
-  getById(@Param('id') id: string) {
-    return this.tableService.getById(id);
-  }
+  // @Get(':id')
+  // getById(@Param('id') id: string) {
+  //   return this.tableService.getById(id);
+  // }
 
+  // TODO: create a table DTO
   @Put(':id')
-  update(@Body() dto: TableDto) {
+  update(@Body() dto: any) {
     return this.tableService.update(dto);
   }
 
