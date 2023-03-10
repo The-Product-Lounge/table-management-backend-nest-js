@@ -1,74 +1,136 @@
+import { FirebaseService } from '../firebase/firebase.service';
 import { UserDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Table, TableDocument } from 'src/schemas/table.schema';
 import { TableDto } from './dto';
-import { InjectQueue } from '@nestjs/bull/dist/decorators';
-import { Queue } from 'bull';
 
 @Injectable()
 export class TableService {
   constructor(
-    @InjectModel(Table.name) private tableModel: Model<TableDocument>,
+    // @InjectModel(Table.name) private tableModel: Model<TableDocument>,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async getAll(): Promise<Table[]> {
-    return this.tableModel.find().sort({ tableNumber: 1 });
+    const db = this.firebaseService.getFirebaseApp().database();
+    try {
+      const snapshot = await db
+        .ref('tables')
+        .orderByChild('tableNumber')
+        .once('value');
+      const data = snapshot.val();
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async getById(id: string): Promise<Table | null> {
-    const ObjectId = mongoose.Types.ObjectId;
-    const _id = new ObjectId(id);
-    //returns an object or null
-    return this.tableModel.findById(_id);
-  }
+  // async getById(id: string): Promise<Table | null> {
+  //   const ObjectId = mongoose.Types.ObjectId;
+  //   const _id = new ObjectId(id);
+  //   //returns an object or null
+  //   return this.tableModel.findById(_id);
+  // }
 
-  async update(table: TableDto) {
+  async update(table: any) {
+    const db = this.firebaseService.getFirebaseApp().database();
+    const updates = {};
+    const tableId = Object.keys(table)[0];
+    updates[`/tables/${tableId}`] = table[tableId];
+    try {
+      await db.ref().update(updates);
+    } catch (err) {
+      throw err;
+    }
     //returns number of docs modified
-    return this.tableModel.updateOne({ _id: table._id }, table).exec();
+    // return this.tableModel.updateOne({ _id: table._id }, table).exec();
   }
 
   async delete(id: string) {
-    //returns number deleted
-    return this.tableModel.deleteOne({ _id: id });
+    const db = this.firebaseService.getFirebaseApp().database();
+    const tableRef = db.ref(`tables/${id}`);
+    try {
+      await tableRef.remove();
+    } catch (err) {
+      throw err;
+    }
   }
 
   async deleteAll() {
-    //returns delete count
-    return this.tableModel.deleteMany({});
+    const db = this.firebaseService.getFirebaseApp().database();
+    const tablesRef = db.ref(`tables`);
+    try {
+      await tablesRef.remove();
+    } catch (err) {
+      throw err;
+    }
   }
 
   async joinTable(user: UserDto) {
-      const { portfolioStage } = user;
-      delete user.portfolioStage;
-      const table = await this.tableModel.findOne({
-        portfolioStage,
-        'users.3': { $exists: false },
+    const { portfolioStage } = user;
+    delete user.portfolioStage;
+
+    const db = this.firebaseService.getFirebaseApp().database();
+    const tablesRef = db.ref(`tables`);
+
+    //the first of an array of objects or null
+    const table = await tablesRef
+      .orderByChild('tableNumber')
+      .once('value')
+      .then((snapshot) => {
+        const tables = [];
+        snapshot.forEach((childSnapshot) => {
+          const table = childSnapshot.val();
+          if (
+            table.users &&
+            table.users.length < 4 &&
+            table.portfolioStage === portfolioStage
+          ) {
+            tables.push({
+              key: childSnapshot.key,
+              ...table,
+            });
+          }
+        });
+        console.log(tables);
+
+        return tables.length ? tables[0] : null;
       });
-      if (!table) {
-        const tables = await this.tableModel.find().sort({ tableNumber: 1 });
+    console.log(table);
 
-        let tableNumber = 1;
-        for (let index = 0; index < tables.length; index++) {
-          const table = tables[index];
-          if (table.tableNumber === tableNumber) tableNumber++;
-          else break;
-        }
+    if (!table) {
+      const tables = await this.getAll();
 
-        const newTable = {
-          users: [user],
-          portfolioStage,
-          tableNumber,
-        };
+      let tableNumber = 1;
 
-        return this.tableModel.create(newTable);
-      } else {
-        table.users.push(user);
-        let tableId = table._id;
-
-        await this.tableModel.updateOne({ _id: tableId }, table).exec();
-        return table;
+      for (let tableId in tables) {
+        const table = tables[tableId];
+        if (table.tableNumber === tableNumber) tableNumber++;
+        else break;
       }
+
+      const newTableRef = tablesRef.push();
+
+      newTableRef.set({
+        users: [user],
+        portfolioStage,
+        tableNumber,
+      });
+
+      return newTableRef;
+    } else {
+      const { key } = table;
+      delete table.key;
+      table.users.push(user);
+      const tableToSaveToDb = {
+        [key]: {
+          ...table,
+        },
+      };
+      await this.update(tableToSaveToDb)
+      return tableToSaveToDb;
+    }
   }
 }

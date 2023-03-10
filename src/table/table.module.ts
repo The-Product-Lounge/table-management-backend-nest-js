@@ -1,3 +1,4 @@
+import { FirebaseService } from '../firebase/firebase.service';
 import { BullModule } from '@nestjs/bull';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
@@ -14,6 +15,6 @@ import { TableConsumer } from './table-consumer';
     })
   ],
   controllers: [TableController],
-  providers: [TableService, TableConsumer],
+  providers: [TableService, TableConsumer, FirebaseService],
 })
 export class TableModule {}
