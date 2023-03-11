@@ -1,3 +1,4 @@
+import { TableValidation } from './table-validation';
 import { DbService } from './../db/db.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { BullModule } from '@nestjs/bull';
@@ -13,6 +14,6 @@ import { TableConsumer } from './table-consumer';
     })
   ],
   controllers: [TableController],
-  providers: [TableService, TableConsumer, FirebaseService, DbService],
+  providers: [TableService, TableConsumer, FirebaseService, DbService, TableValidation],
 })
 export class TableModule {}
