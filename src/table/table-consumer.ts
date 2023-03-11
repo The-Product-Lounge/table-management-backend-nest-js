@@ -5,7 +5,9 @@ import { TableService } from './table.service';
 
 @Processor('table')
 export class TableConsumer {
-  constructor(private readonly tableService: TableService) {}
+  constructor(
+    private readonly tableService: TableService,
+  ) {}
 
   @Process('join-table')
   async joinTable(job: Job<UserDto>) {

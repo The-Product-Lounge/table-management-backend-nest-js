@@ -1,68 +1,44 @@
-import { FirebaseService } from '../firebase/firebase.service';
+import { DbService } from './../db/db.service';
 import { UserDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { Table, TableDocument } from 'src/schemas/table.schema';
 import { TableDto } from './dto';
 
 @Injectable()
 export class TableService {
   constructor(
-    // @InjectModel(Table.name) private tableModel: Model<TableDocument>,
-    private readonly firebaseService: FirebaseService,
+    private dbService: DbService,
   ) {}
 
-  async getAll(): Promise<Table[]> {
-    const db = this.firebaseService.getFirebaseApp().database();
+  async getAll() {
     try {
-      const snapshot = await db
-        .ref('tables')
-        .orderByChild('tableNumber')
-        .once('value');
-      const data = snapshot.val();
-      return data;
+      const tables = await this.dbService.query('tables', 'tableNumber');
+      return tables;
     } catch (err) {
       throw err;
     }
   }
 
-  // async getById(id: string): Promise<Table | null> {
-  //   const ObjectId = mongoose.Types.ObjectId;
-  //   const _id = new ObjectId(id);
-  //   //returns an object or null
-  //   return this.tableModel.findById(_id);
-  // }
-
   async update(table: any) {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const updates = {};
     const tableId = Object.keys(table)[0];
-    updates[`/tables/${tableId}`] = table[tableId];
     try {
-      await db.ref().update(updates);
+      await this.dbService.update('tables', tableId, table[tableId]);
     } catch (err) {
       throw err;
     }
-    //returns number of docs modified
-    // return this.tableModel.updateOne({ _id: table._id }, table).exec();
   }
 
   async delete(id: string) {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const tableRef = db.ref(`tables/${id}`);
     try {
-      await tableRef.remove();
+      await this.dbService.delete('tables', id);
     } catch (err) {
       throw err;
     }
   }
 
   async deleteAll() {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const tablesRef = db.ref(`tables`);
     try {
-      await tablesRef.remove();
+      await this.dbService.deleteAll('tables');
+      await this.dbService.deleteAll('uuids');
     } catch (err) {
       throw err;
     }
@@ -72,37 +48,21 @@ export class TableService {
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
-    const db = this.firebaseService.getFirebaseApp().database();
-    const tablesRef = db.ref(`tables`);
+    const tables = (await this.getAll()) as {
+      [key: string]: {
+        users?: any[];
+        portfolioStage: string;
+        tableNumber: number;
+      };
+    };
 
-    //the first of an array of objects or null
-    const table = await tablesRef
-      .orderByChild('tableNumber')
-      .once('value')
-      .then((snapshot) => {
-        const tables = [];
-        snapshot.forEach((childSnapshot) => {
-          const table = childSnapshot.val();
-          if (
-            table.users &&
-            table.users.length < 4 &&
-            table.portfolioStage === portfolioStage
-          ) {
-            tables.push({
-              key: childSnapshot.key,
-              ...table,
-            });
-          }
-        });
-        console.log(tables);
+    const tableWithKey = Object.entries(tables).find(([key, table]) => {
+      return table.users?.length < 4 && table.portfolioStage === portfolioStage;
+    });
 
-        return tables.length ? tables[0] : null;
-      });
-    console.log(table);
+    const [TableInDbId, table] = tableWithKey || [null, null];
 
     if (!table) {
-      const tables = await this.getAll();
-
       let tableNumber = 1;
 
       for (let tableId in tables) {
@@ -111,26 +71,20 @@ export class TableService {
         else break;
       }
 
-      const newTableRef = tablesRef.push();
-
-      newTableRef.set({
+      const newTable = {
         users: [user],
         portfolioStage,
         tableNumber,
-      });
-
-      return newTableRef;
-    } else {
-      const { key } = table;
-      delete table.key;
-      table.users.push(user);
-      const tableToSaveToDb = {
-        [key]: {
-          ...table,
-        },
       };
-      await this.update(tableToSaveToDb)
-      return tableToSaveToDb;
+
+      const tableId = await this.dbService.add('tables', newTable);
+      await this.dbService.update('uuids', user.id, tableId);
+      return tableId;
+    } else {
+      table.users.push(user);
+      await this.dbService.update('tables', TableInDbId, table);
+      await this.dbService.update('uuids', user.id, TableInDbId);
+      return TableInDbId;
     }
   }
 }
