@@ -5,9 +5,7 @@ import { TableDto } from './dto';
 
 @Injectable()
 export class TableService {
-  constructor(
-    private dbService: DbService,
-  ) {}
+  constructor(private dbService: DbService) {}
 
   async getAll() {
     try {
@@ -56,9 +54,13 @@ export class TableService {
       };
     };
 
-    const tableWithKey = Object.entries(tables).find(([key, table]) => {
-      return table.users?.length < 4 && table.portfolioStage === portfolioStage;
-    });
+    const tableWithKey = tables
+      ? Object.entries(tables).find(([key, table]) => {
+          return (
+            table.users?.length < 4 && table.portfolioStage === portfolioStage
+          );
+        })
+      : null;
 
     const [TableInDbId, table] = tableWithKey || [null, null];
 
