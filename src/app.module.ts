@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { FirebaseService } from './firebase/firebase.service';
+import { DbService } from './db/db.service';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { FirebaseService } from './firebase/firebase.service';
     }),
   ],
   controllers: [],
-  providers: [FirebaseService],
+  providers: [FirebaseService, DbService],
 })
 export class AppModule {}
