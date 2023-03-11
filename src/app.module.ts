@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { FirebaseService } from './firebase/firebase.service';
 import { DbService } from './db/db.service';
+import { TableValidation } from './table/table-validation';
 
 @Module({
   imports: [

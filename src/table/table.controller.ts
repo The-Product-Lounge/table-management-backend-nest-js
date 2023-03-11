@@ -1,3 +1,4 @@
+import { TableValidation } from './table-validation';
 import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { UserDto, TableDto } from './dto';
 import { TableService } from './table.service';
@@ -9,6 +10,9 @@ import {
   Post,
   Put,
   Param,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Queue } from 'bull';
 
@@ -16,6 +20,7 @@ import { Queue } from 'bull';
 export class TableController {
   constructor(
     private tableService: TableService,
+    private tableValidation: TableValidation,
     @InjectQueue('table') private readonly tableQueue: Queue,
   ) {}
 
@@ -27,6 +32,8 @@ export class TableController {
   // TODO: create a table DTO
   @Put(':id')
   update(@Body() dto: any) {
+    const isValidated = this.tableValidation.hasExpectedProperties(dto);
+    if(!isValidated) throw new BadRequestException('Bad Request', { cause: new Error(), description: 'Table format is incorrect' })
     return this.tableService.update(dto);
   }
 
@@ -42,7 +49,7 @@ export class TableController {
 
   @Post('join-table')
   async joinTable(@Body() dto: UserDto) {
-    await this.tableQueue.add('join-table', dto)
+    await this.tableQueue.add('join-table', dto);
     return 'adding to table';
     // return this.tableService.joinTable(dto)
   }
