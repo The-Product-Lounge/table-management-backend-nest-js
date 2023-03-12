@@ -5,29 +5,32 @@ import { Injectable } from '@nestjs/common';
 export class DbService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
+  db = this.firebaseService.getFirebaseApp().database();
+
   async query(nodeName: string, orderBy?: string) {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const snapshot = orderBy
-      ? await db.ref(nodeName).once('value')
-      : await db.ref(nodeName).orderByChild(orderBy).once('value');
-    const data = snapshot.val();
-    return data;
+    try {
+      const snapshot = orderBy
+        ? await this.db.ref(nodeName).once('value')
+        : await this.db.ref(nodeName).orderByChild(orderBy).once('value');
+      const data = snapshot.val();
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async update(nodeName: string, key: string, value: any) {
-    const db = this.firebaseService.getFirebaseApp().database();
     const updates = {};
     updates[`/${nodeName}/${key}`] = value;
     try {
-      await db.ref().update(updates);
+      await this.db.ref().update(updates);
     } catch (err) {
       throw err;
     }
   }
 
   async delete(nodeName: string, key: string) {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const childRef = db.ref(`${nodeName}/${key}`);
+    const childRef = this.db.ref(`${nodeName}/${key}`);
     try {
       await childRef.remove();
     } catch (err) {
@@ -36,10 +39,7 @@ export class DbService {
   }
 
   async deleteAll(nodeName: string) {
-    console.log(nodeName);
-    
-    const db = this.firebaseService.getFirebaseApp().database();
-    const nodeRef = db.ref(nodeName);
+    const nodeRef = this.db.ref(nodeName);
     try {
       await nodeRef.remove();
     } catch (err) {
@@ -48,13 +48,13 @@ export class DbService {
   }
 
   async add(nodeName: string, value: any) {
-    const db = this.firebaseService.getFirebaseApp().database();
-    const nodeRef = db.ref(nodeName);
-
-    const newRef = nodeRef.push();
-
-    newRef.set(value);
-
-    return newRef.key;
+    try {
+      const nodeRef = this.db.ref(nodeName);
+      const newRef = nodeRef.push();
+      newRef.set(value);
+      return newRef.key;
+    } catch (err) {
+      throw err;
+    }
   }
 }
