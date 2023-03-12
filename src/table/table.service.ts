@@ -48,7 +48,7 @@ export class TableService {
 
     const tables = (await this.getAll()) as {
       [key: string]: {
-        users?: any[];
+        users?: UserDto[];
         portfolioStage: string;
         tableNumber: number;
       };
@@ -62,7 +62,7 @@ export class TableService {
         })
       : null;
 
-    const [TableInDbId, table] = tableWithKey || [null, null];
+    let [tableId, table] = tableWithKey || [null, null];
 
     if (!table) {
       let tableNumber = 1;
@@ -79,14 +79,12 @@ export class TableService {
         tableNumber,
       };
 
-      const tableId = await this.dbService.add('tables', newTable);
-      await this.dbService.update('uuids', user.id, tableId);
-      return tableId;
+      tableId = await this.dbService.add('tables', newTable);
     } else {
       table.users.push(user);
-      await this.dbService.update('tables', TableInDbId, table);
-      await this.dbService.update('uuids', user.id, TableInDbId);
-      return TableInDbId;
+      await this.dbService.update('tables', tableId, table);
     }
+    await this.dbService.update('uuids', user.id, tableId);
+    return tableId;
   }
 }
