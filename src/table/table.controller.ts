@@ -1,6 +1,6 @@
 import { TableValidation } from './table-validation';
 import { InjectQueue } from '@nestjs/bull/dist/decorators';
-import { UserDto, TableDto } from './dto';
+import { UserDto } from './dto';
 import { TableService } from './table.service';
 import {
   Body,
@@ -10,8 +10,6 @@ import {
   Post,
   Put,
   Param,
-  HttpException,
-  HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
 import { Queue } from 'bull';
@@ -29,7 +27,6 @@ export class TableController {
     return this.tableService.getAll();
   }
 
-  // TODO: create a table DTO
   @Put(':id')
   update(@Body() dto: any) {
     const isValidated = this.tableValidation.hasExpectedProperties(dto);
@@ -51,6 +48,5 @@ export class TableController {
   async joinTable(@Body() dto: UserDto) {
     await this.tableQueue.add('join-table', dto);
     return 'adding to table';
-    // return this.tableService.joinTable(dto)
   }
 }

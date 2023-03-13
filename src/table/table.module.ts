@@ -1,6 +1,5 @@
+import { DbModule } from './../db/db.module';
 import { TableValidation } from './table-validation';
-import { DbService } from './../db/db.service';
-import { FirebaseService } from '../firebase/firebase.service';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TableController } from './table.controller';
@@ -11,9 +10,10 @@ import { TableConsumer } from './table-consumer';
   imports: [
     BullModule.registerQueueAsync({
       name: 'table',
-    })
+    }),
+    DbModule,
   ],
   controllers: [TableController],
-  providers: [TableService, TableConsumer, FirebaseService, DbService, TableValidation],
+  providers: [TableService, TableConsumer, TableValidation],
 })
 export class TableModule {}
