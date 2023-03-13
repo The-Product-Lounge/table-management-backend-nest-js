@@ -5,15 +5,13 @@ import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { FirebaseService } from './firebase/firebase.service';
 import { DbService } from './db/db.service';
-import { TableValidation } from './table/table-validation';
+import { DbModule } from './db/db.module';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-    }),
-    MongooseModule.forRoot(process.env.DATABASE_URL, {
-      dbName: 'table_management_db',
     }),
     TableModule,
     BullModule.forRoot({
@@ -24,6 +22,6 @@ import { TableValidation } from './table/table-validation';
     }),
   ],
   controllers: [],
-  providers: [FirebaseService, DbService],
+  providers: [],
 })
 export class AppModule {}

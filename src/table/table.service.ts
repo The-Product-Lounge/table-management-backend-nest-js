@@ -7,7 +7,7 @@ import { TableDto } from './dto';
 export class TableService {
   constructor(private dbService: DbService) {}
 
-  async getAll() {
+  async getAll(): Promise<TableDto> {
     try {
       const tables = await this.dbService.query('tables', 'tableNumber');
       return tables;
@@ -16,7 +16,7 @@ export class TableService {
     }
   }
 
-  async update(table: any) {
+  async update(table: TableDto): Promise<void> {
     const tableId = Object.keys(table)[0];
     try {
       await this.dbService.update('tables', tableId, table[tableId]);
@@ -25,7 +25,7 @@ export class TableService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     try {
       await this.dbService.delete('tables', id);
     } catch (err) {
@@ -33,7 +33,7 @@ export class TableService {
     }
   }
 
-  async deleteAll() {
+  async deleteAll(): Promise<void> {
     try {
       await this.dbService.deleteAll('tables');
       await this.dbService.deleteAll('uuids');
@@ -42,27 +42,22 @@ export class TableService {
     }
   }
 
-  async joinTable(user: UserDto) {
+  async joinTable(user: UserDto): Promise<string> {
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
-    const tables = (await this.getAll()) as {
-      [key: string]: {
-        users?: UserDto[];
-        portfolioStage: string;
-        tableNumber: number;
-      };
-    };
+    const tables = await this.getAll();
 
-    const tableWithKey = tables
-      ? Object.entries(tables).find(([key, table]) => {
+    let tableKey = tables
+      ? Object.keys(tables).find((key) => {
+          const table = tables[key];
           return (
-            table.users?.length < 4 && table.portfolioStage === portfolioStage
+            table.users.length < 4 && table.portfolioStage === portfolioStage
           );
         })
       : null;
 
-    let [tableId, table] = tableWithKey || [null, null];
+    let table = tableKey ? tables[tableKey] : null;
 
     if (!table) {
       let tableNumber = 1;
@@ -79,12 +74,12 @@ export class TableService {
         tableNumber,
       };
 
-      tableId = await this.dbService.add('tables', newTable);
+      tableKey = await this.dbService.add('tables', newTable);
     } else {
       table.users.push(user);
-      await this.dbService.update('tables', tableId, table);
+      await this.dbService.update('tables', tableKey, table);
     }
-    await this.dbService.update('uuids', user.id, tableId);
-    return tableId;
+    await this.dbService.update('uuids', user.id, tableKey);
+    return tableKey;
   }
 }
