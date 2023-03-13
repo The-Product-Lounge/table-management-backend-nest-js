@@ -1,28 +1,20 @@
-import { IsString, IsNotEmpty, IsNumber, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsObject } from 'class-validator';
 import { UserDto } from './user.dto';
 
 export class TableDto {
-  [key: string]: {
-    users: UserDto[];
-    portfolioStage: string;
-    tableNumber: number;
-  };
+  [key: string]: Table;
 }
 
-// export class TableDto {
-//     @IsString()
-//     @IsNotEmpty()
-//     _id: string;
+export class Table {
+  @IsArray()
+  @IsNotEmpty()
+  users: { id: string } & UserDto[];
 
-//     @IsArray()
-//     @IsNotEmpty()
-//     users: UserDto[];
+  @IsString()
+  @IsNotEmpty()
+  portfolioStage: string;
 
-//     @IsString()
-//     @IsNotEmpty()
-//     portfolioStage: string;
-
-//     @IsNumber()
-//     @IsNotEmpty()
-//     tableNumber: number;
-// }
+  @IsNumber()
+  @IsNotEmpty()
+  tableNumber: number;
+}

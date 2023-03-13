@@ -17,7 +17,4 @@ export class UserDto {
     @IsNotEmpty()
     imgUrl: string;
 
-    @IsString()
-    @IsNotEmpty()
-    id: string;
 }

@@ -1,11 +1,17 @@
+import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { DbService } from './../db/db.service';
 import { UserDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { TableDto } from './dto';
+import { v4 as uuidv4 } from 'uuid';
+import { Queue } from 'bull';
 
 @Injectable()
 export class TableService {
-  constructor(private dbService: DbService) {}
+  constructor(
+    private dbService: DbService,
+    @InjectQueue('table') private readonly tableQueue: Queue,
+  ) {}
 
   async getAll(): Promise<TableDto> {
     try {
@@ -42,7 +48,7 @@ export class TableService {
     }
   }
 
-  async joinTable(user: UserDto): Promise<string> {
+  async joinTable(user: { id: string } & UserDto): Promise<string> {
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
@@ -81,5 +87,11 @@ export class TableService {
     }
     await this.dbService.update('uuids', user.id, tableKey);
     return tableKey;
+  }
+
+  async createJoinTableRequest(user: UserDto) {
+    const requestId = uuidv4();
+    await this.tableQueue.add('join-table', { ...user, id: requestId });
+    return requestId;
   }
 }
