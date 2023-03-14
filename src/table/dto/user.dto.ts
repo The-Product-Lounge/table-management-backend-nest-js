@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsIn } from 'class-validator';
+import { IsString, IsNotEmpty, IsIn, IsOptional } from 'class-validator';
 
 export class UserDto {
   @IsString()
@@ -17,9 +17,16 @@ export class UserDto {
     'Planning & Research',
     'Brainstorming',
   ])
-  portfolioStage?: string;
+  @IsOptional()
+  portfolioStage: string;
 
   @IsString()
   @IsNotEmpty()
   imgUrl: string;
+}
+
+export class UserWithIdDto extends UserDto {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 }
