@@ -58,7 +58,7 @@ export class TableService {
     const table = tables.find(
       (arrayTable) =>
         arrayTable.portfolioStage === portfolioStage &&
-        arrayTable.users.length < 4,
+        arrayTable.users.length < 3,
     );
     let tableId = table ? table.id : null;
 

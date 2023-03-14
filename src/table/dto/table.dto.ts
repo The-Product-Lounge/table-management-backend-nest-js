@@ -6,15 +6,16 @@ import {
   IsArray,
   IsIn,
   ValidateNested,
-  IsOptional,
+  ArrayMaxSize,
 } from 'class-validator';
-import { UserDto, UserWithIdDto } from './user.dto';
+import { UserWithIdDto } from './user.dto';
 
 export class TableDto {
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => UserWithIdDto)
+  @ArrayMaxSize(3)
   users: UserWithIdDto[];
 
   @IsString()
