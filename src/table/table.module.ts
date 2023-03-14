@@ -1,5 +1,4 @@
 import { DbModule } from './../db/db.module';
-import { TableValidation } from './table-validation';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TableController } from './table.controller';
@@ -14,6 +13,6 @@ import { TableConsumer } from './table-consumer';
     DbModule,
   ],
   controllers: [TableController],
-  providers: [TableService, TableConsumer, TableValidation],
+  providers: [TableService, TableConsumer],
 })
 export class TableModule {}

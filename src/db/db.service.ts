@@ -11,12 +11,21 @@ export class DbService {
   private db: firebase.database.Database;
 
   async query(nodeName: string, orderBy?: string) {
+    console.log(nodeName, orderBy);
+
     try {
-      const snapshot = orderBy
-        ? await this.db.ref(nodeName).once('value')
-        : await this.db.ref(nodeName).orderByChild(orderBy).once('value');
+      const snapshot = await this.db.ref(nodeName).once('value');
       const data = snapshot.val();
-      return data;
+      if (!data) {
+        return [];
+      }
+      const entityArray = [];
+      for (const entityKey in data) {
+        const entity = data[entityKey];
+        entityArray.push({ id: entityKey, ...entity });
+      }
+      if (orderBy) entityArray.sort((a, b) => a[orderBy] - b[orderBy]);
+      return entityArray;
     } catch (err) {
       throw err;
     }

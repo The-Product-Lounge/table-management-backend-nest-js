@@ -6,19 +6,16 @@ import {
   IsArray,
   IsIn,
   ValidateNested,
+  IsOptional,
 } from 'class-validator';
-import { UserDto } from './user.dto';
+import { UserDto, UserWithIdDto } from './user.dto';
 
 export class TableDto {
-  [key: string]: Table;
-}
-
-export class Table {
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => UserDto)
-  users: { id: string } & UserDto[];
+  @Type(() => UserWithIdDto)
+  users: UserWithIdDto[];
 
   @IsString()
   @IsNotEmpty()
@@ -33,4 +30,10 @@ export class Table {
   @IsNumber()
   @IsNotEmpty()
   tableNumber: number;
+}
+
+export class TableWithIdDto extends TableDto {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 }

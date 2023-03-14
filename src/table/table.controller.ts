@@ -1,6 +1,4 @@
-import { Table, TableDto } from './dto/table.dto';
-import { TableValidation } from './table-validation';
-import { InjectQueue } from '@nestjs/bull/dist/decorators';
+import { TableWithIdDto } from './dto/table.dto';
 import { UserDto } from './dto';
 import { TableService } from './table.service';
 import {
@@ -11,40 +9,19 @@ import {
   Post,
   Put,
   Param,
-  ValidationPipe,
 } from '@nestjs/common';
-import { UsePipes } from '@nestjs/common/decorators';
-import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Controller('table')
 export class TableController {
-  constructor(
-    private tableService: TableService,
-    private tableValidation: TableValidation,
-  ) {}
+  constructor(private tableService: TableService) {}
 
   @Get()
-  getAll() {
+  getAll(): Promise<TableWithIdDto[]> {
     return this.tableService.getAll();
   }
 
-  // @Put(':id')
-  // update(@Body() dto: TableDto) {
-  //   return dto;
-  //   // const isValidated = this.tableValidation.hasExpectedProperties(dto);
-  //   // if(!isValidated) throw new BadRequestException('Bad Request', { cause: new Error(), description: 'Table format is incorrect' })
-  //   // return this.tableService.update(dto);
-  // }
-
   @Put(':id')
-  update(@Body() dto: any) {
-    // return dto
-    const isValidated = this.tableValidation.hasExpectedProperties(dto);
-    if (!isValidated)
-      throw new BadRequestException('Bad Request', {
-        cause: new Error(),
-        description: 'Table format is incorrect',
-      });
+  update(@Body() dto: TableWithIdDto) {
     return this.tableService.update(dto);
   }
 

@@ -1,9 +1,8 @@
-import { Table } from './dto/table.dto';
+import { TableWithIdDto } from './dto/table.dto';
 import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { DbService } from './../db/db.service';
-import { UserDto } from './dto/user.dto';
+import { UserDto, UserWithIdDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
-import { TableDto } from './dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bull';
 
@@ -14,7 +13,7 @@ export class TableService {
     @InjectQueue('table') private readonly tableQueue: Queue,
   ) {}
 
-  async getAll(): Promise<TableDto> {
+  async getAll(): Promise<TableWithIdDto[]> {
     try {
       const tables = await this.dbService.query('tables', 'tableNumber');
       return tables;
@@ -23,10 +22,11 @@ export class TableService {
     }
   }
 
-  async update(table: TableDto): Promise<void> {
-    const tableId = Object.keys(table)[0];
+  async update(table: TableWithIdDto): Promise<void> {
+    const { id } = table;
+    delete table.id;
     try {
-      await this.dbService.update('tables', tableId, table[tableId]);
+      await this.dbService.update('tables', id, table);
     } catch (err) {
       throw err;
     }
@@ -49,28 +49,24 @@ export class TableService {
     }
   }
 
-  async joinTable(user: { id: string } & UserDto): Promise<string> {
+  async joinTable(user: UserWithIdDto): Promise<string> {
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
     const tables = await this.getAll();
 
-    let tableKey = tables
-      ? Object.keys(tables).find((key) => {
-          const table = tables[key];
-          return (
-            table.users.length < 4 && table.portfolioStage === portfolioStage
-          );
-        })
-      : null;
-
-    let table = tableKey ? tables[tableKey] : null;
+    const table = tables.find(
+      (arrayTable) =>
+        arrayTable.portfolioStage === portfolioStage &&
+        arrayTable.users.length < 4,
+    );
+    let tableId = table ? table.id : null;
 
     if (!table) {
       let tableNumber = 1;
 
-      for (let tableId in tables) {
-        const table = tables[tableId];
+      for (let index = 0; index < tables.length; index++) {
+        const table = tables[index];
         if (table.tableNumber === tableNumber) tableNumber++;
         else break;
       }
@@ -80,14 +76,14 @@ export class TableService {
         portfolioStage,
         tableNumber,
       };
-
-      tableKey = await this.dbService.add('tables', newTable);
+      tableId = await this.dbService.add('tables', newTable);
     } else {
       table.users.push(user);
-      await this.dbService.update('tables', tableKey, table);
+      delete table.id;
+      await this.dbService.update('tables', tableId, table);
     }
-    await this.dbService.update('uuids', user.id, tableKey);
-    return tableKey;
+    await this.dbService.update('uuids', user.id, tableId);
+    return tableId;
   }
 
   async createJoinTableRequest(user: UserDto) {

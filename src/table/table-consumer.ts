@@ -1,3 +1,4 @@
+import { UserWithIdDto } from './dto/user.dto';
 import { UserDto } from './dto';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
@@ -8,7 +9,7 @@ export class TableConsumer {
   constructor(private readonly tableService: TableService) {}
 
   @Process({ name: 'join-table', concurrency: 1 })
-  async joinTable(job: Job<{ id: string } & UserDto>) {
+  async joinTable(job: Job<UserWithIdDto>) {
     await this.tableService.joinTable(job.data);
   }
 }
