@@ -20,6 +20,7 @@ export class TableValidation {
 
   hasExpectedProperties(obj: object): boolean {
     const objKeys = Object.keys(obj);
+
     if (objKeys.length !== 1) {
       return false;
     }
@@ -39,8 +40,10 @@ export class TableValidation {
       }
     }
 
-    if (!this.isArrayOfUsers(table.users)) return false;
+    if (!this.isArrayOfUsers(table.users)) {
+      return false;
+    }
 
-    return true
+    return true;
   }
 }

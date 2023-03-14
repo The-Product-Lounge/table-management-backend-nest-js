@@ -1,3 +1,4 @@
+import { Table } from './dto/table.dto';
 import { InjectQueue } from '@nestjs/bull/dist/decorators';
 import { DbService } from './../db/db.service';
 import { UserDto } from './dto/user.dto';

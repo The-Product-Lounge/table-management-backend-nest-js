@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "firebase": [
+        "node_modules/firebase/app/dist/index.cjs",
+        "node_modules/firebase"
+      ]
+    }
   }
 }

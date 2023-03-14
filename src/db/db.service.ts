@@ -1,11 +1,14 @@
 import { FirebaseService } from './../firebase/firebase.service';
 import { Injectable } from '@nestjs/common';
+import * as firebase from 'firebase';
 
 @Injectable()
 export class DbService {
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(private readonly firebaseService: FirebaseService) {
+    this.db = this.firebaseService.getFirebaseApp().database();
+  }
 
-  db = this.firebaseService.getFirebaseApp().database();
+  private db: firebase.database.Database;
 
   async query(nodeName: string, orderBy?: string) {
     try {
