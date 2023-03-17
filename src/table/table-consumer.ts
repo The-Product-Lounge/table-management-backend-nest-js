@@ -10,6 +10,6 @@ export class TableConsumer {
 
   @Process({ name: 'join-table', concurrency: 1 })
   async joinTable(job: Job<UserWithIdDto>) {
-    await this.tableService.joinTable(job.data);
+    this.tableService.joinTable(job.data);
   }
 }

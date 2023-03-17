@@ -88,7 +88,7 @@ export class TableService {
 
   async createJoinTableRequest(user: UserDto) {
     const requestId = uuidv4();
-    this.tableQueue.add('join-table', { ...user, id: requestId });
+    await this.tableQueue.add('join-table', { ...user, id: requestId });
     return requestId;
   }
 }
