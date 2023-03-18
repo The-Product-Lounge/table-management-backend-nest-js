@@ -50,7 +50,8 @@ export class TableService {
   }
 
   async joinTable(user: UserWithIdDto): Promise<string> {
-    
+    console.log('entered join table');
+
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
@@ -61,7 +62,7 @@ export class TableService {
         arrayTable.portfolioStage === portfolioStage &&
         arrayTable.users.length < 3,
     );
-    
+
     let tableId = table ? table.id : null;
 
     if (!table) {
@@ -85,12 +86,17 @@ export class TableService {
       await this.dbService.update('tables', tableId, table);
     }
     await this.dbService.update('uuids', user.id, tableId);
+    console.log('exited join table');
     return tableId;
   }
 
   async createJoinTableRequest(user: UserDto) {
     const requestId = uuidv4();
-    await this.tableQueue.add('join-table', { ...user, id: requestId });
+    await this.tableQueue.add(
+      'join-table',
+      { ...user, id: requestId },
+      { removeOnComplete: true },
+    );
     return requestId;
   }
 }

@@ -11,8 +11,6 @@ export class DbService {
   private db: firebase.database.Database;
 
   async query(nodeName: string, orderBy?: string) {
-    console.log(nodeName, orderBy);
-
     try {
       const snapshot = await this.db.ref(nodeName).once('value');
       const data = snapshot.val();

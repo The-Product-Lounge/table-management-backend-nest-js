@@ -9,8 +9,14 @@ export class TableConsumer {
   constructor(private readonly tableService: TableService) {}
 
   @Process({ name: 'join-table', concurrency: 1 })
-  
   async joinTable(job: Job<UserWithIdDto>) {
-    await this.tableService.joinTable(job.data);
+    try {
+      await this.tableService.joinTable(job.data);
+      job.moveToCompleted('done');
+    } catch (err) {
+      job.moveToFailed({ message: 'error' });
+      job.log(`Job failed with error: ${err.message}`);
+      throw err;
+    }
   }
 }
