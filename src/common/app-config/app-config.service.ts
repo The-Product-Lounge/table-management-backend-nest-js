@@ -20,7 +20,7 @@ export class AppConfigService {
         clientEmail: this.configService.get<string>('FIREBASE_CLIENT_EMAIL'),
         url: this.configService.get<string>('FIREBASE_DATABASE_URL'),
       },
-      servicePort: 3000
+      servicePort: 3030
     }
   }
 
