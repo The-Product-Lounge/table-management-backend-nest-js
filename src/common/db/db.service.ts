@@ -1,30 +1,29 @@
-import { FirebaseService } from './../firebase/firebase.service';
-import { Injectable } from '@nestjs/common';
+import {FirebaseService} from '../firebase/firebase.service';
+import {Injectable} from '@nestjs/common';
 import * as firebase from 'firebase';
 
 @Injectable()
 export class DbService {
+  private db: firebase.database.Database;
+
   constructor(private readonly firebaseService: FirebaseService) {
     this.db = this.firebaseService.getFirebaseApp().database();
   }
 
-  private db: firebase.database.Database;
-
   async query(nodeName: string, orderBy?: string) {
-    console.log(nodeName, orderBy);
-
     try {
       const snapshot = await this.db.ref(nodeName).once('value');
-      const data = snapshot.val();
+      const data = await snapshot.val();
       if (!data) {
         return [];
       }
       const entityArray = [];
-      for (const entityKey in data) {
-        const entity = data[entityKey];
-        entityArray.push({ id: entityKey, ...entity });
+      for (const [id, value] of Object.entries(data)) {
+        entityArray.push({id, ...(value as object)});
       }
-      if (orderBy) entityArray.sort((a, b) => a[orderBy] - b[orderBy]);
+      if (orderBy) {
+        entityArray.sort((a, b) => a[orderBy] - b[orderBy]);
+      }
       return entityArray;
     } catch (err) {
       throw err;
@@ -42,7 +41,7 @@ export class DbService {
   }
 
   async delete(nodeName: string, key: string) {
-    const childRef = this.db.ref(`${nodeName}/${key}`);
+    const childRef = await this.db.ref(`${nodeName}/${key}`);
     try {
       await childRef.remove();
     } catch (err) {
@@ -51,7 +50,7 @@ export class DbService {
   }
 
   async deleteAll(nodeName: string) {
-    const nodeRef = this.db.ref(nodeName);
+    const nodeRef = await this.db.ref(nodeName);
     try {
       await nodeRef.remove();
     } catch (err) {
@@ -61,9 +60,7 @@ export class DbService {
 
   async add(nodeName: string, value: any) {
     try {
-      const nodeRef = this.db.ref(nodeName);
-      const newRef = nodeRef.push();
-      newRef.set(value);
+      const newRef = await this.db.ref(nodeName).push(value);
       return newRef.key;
     } catch (err) {
       throw err;

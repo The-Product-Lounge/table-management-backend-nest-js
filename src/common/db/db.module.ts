@@ -1,4 +1,4 @@
-import { FirebaseModule } from './../firebase/firebase.module';
+import { FirebaseModule } from '../firebase/firebase.module';
 import { DbService } from './db.service';
 import { Module } from '@nestjs/common';
 
