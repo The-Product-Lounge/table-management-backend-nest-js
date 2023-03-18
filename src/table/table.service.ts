@@ -50,6 +50,7 @@ export class TableService {
   }
 
   async joinTable(user: UserWithIdDto): Promise<string> {
+    
     const { portfolioStage } = user;
     delete user.portfolioStage;
 
@@ -60,6 +61,7 @@ export class TableService {
         arrayTable.portfolioStage === portfolioStage &&
         arrayTable.users.length < 3,
     );
+    
     let tableId = table ? table.id : null;
 
     if (!table) {

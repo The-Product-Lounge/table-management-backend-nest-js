@@ -9,7 +9,8 @@ export class TableConsumer {
   constructor(private readonly tableService: TableService) {}
 
   @Process({ name: 'join-table', concurrency: 1 })
+  
   async joinTable(job: Job<UserWithIdDto>) {
-    this.tableService.joinTable(job.data);
+    await this.tableService.joinTable(job.data);
   }
 }
