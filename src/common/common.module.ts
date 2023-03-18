@@ -12,7 +12,7 @@ import {BullModule} from "@nestjs/bull";
     DbModule,
     ConfigModule.forRoot({
       envFilePath: `${process.cwd()}/configurations/${process.env.NODE_ENV}.env`,
-      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      ignoreEnvFile: process.env.NODE_ENV !== 'development',
       isGlobal: true,
     }),
     BullModule.forRootAsync({
