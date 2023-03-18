@@ -8,9 +8,4 @@ import {CommonModule} from "./common/common.module";
     CommonModule,
   ],
 })
-export class AppModule {
-  constructor() {
-    console.log(process.env.NODE_ENV);
-    
-  }
-}
+export class AppModule {}
