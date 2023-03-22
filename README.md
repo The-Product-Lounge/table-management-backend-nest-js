@@ -30,6 +30,7 @@ The technology stack we used was:
 - NestJS for our backend - a sturdy and comprehensive backend framework. Must useful for its validations.
 - React for our frontend.
 - Node.js
+
 The API calls to the backend are done with the REST API method.
 An importent asspect of this project is that The API call "Join Table" is implemented as a queue because it relies on one person accessing and changing the table at a time.
 
