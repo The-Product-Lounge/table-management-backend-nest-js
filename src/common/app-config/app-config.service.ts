@@ -1,11 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {AppConfig} from "./app-config";
-import {ConfigService} from "@nestjs/config";
+import { Injectable } from '@nestjs/common';
+import { AppConfig } from './app-config';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppConfigService {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   get config(): AppConfig {
     return {
@@ -20,8 +19,7 @@ export class AppConfigService {
         clientEmail: this.configService.get<string>('FIREBASE_CLIENT_EMAIL'),
         url: this.configService.get<string>('FIREBASE_DATABASE_URL'),
       },
-      servicePort: 3030
-    }
+      servicePort: 3030,
+    };
   }
-
 }

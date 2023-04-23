@@ -1,18 +1,17 @@
-import {TableWithIdDto} from './dto/table.dto';
-import {InjectQueue} from '@nestjs/bull/dist/decorators';
-import {DbService} from '../common/db/db.service';
-import {UserDto, UserWithIdDto} from './dto/user.dto';
-import {Injectable} from '@nestjs/common';
-import {v4 as uuidv4} from 'uuid';
-import {Queue} from 'bull';
+import { TableWithIdDto } from './dto/table.dto';
+import { InjectQueue } from '@nestjs/bull/dist/decorators';
+import { DbService } from '../common/db/db.service';
+import { UserDto, UserWithIdDto } from './dto/user.dto';
+import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { Queue } from 'bull';
 
 @Injectable()
 export class TableService {
   constructor(
     private dbService: DbService,
     @InjectQueue('table') private readonly tableQueue: Queue,
-  ) {
-  }
+  ) {}
 
   async getAll(): Promise<TableWithIdDto[]> {
     try {
@@ -24,7 +23,7 @@ export class TableService {
   }
 
   async update(table: TableWithIdDto): Promise<void> {
-    const {id} = table;
+    const { id } = table;
     delete table.id;
     try {
       await this.dbService.update('tables', id, table);
@@ -52,7 +51,7 @@ export class TableService {
 
   async joinTable(user: UserWithIdDto): Promise<string> {
     console.log('entered join table');
-    const {portfolioStage} = user;
+    const { portfolioStage } = user;
     delete user.portfolioStage;
     console.log('Getting Tables');
     const tables = await this.getAll();
@@ -66,12 +65,14 @@ export class TableService {
     let tableId = table?.id;
 
     if (!tableId) {
-      console.log(`Table not found for ${portfolioStage} setting new table number`);
+      console.log(
+        `Table not found for ${portfolioStage} setting new table number`,
+      );
       let tableNumber;
       for (let index = 0; index < tables.length; index++) {
         const table = tables[index];
-        if (table?.tableNumber !== (index + 1)) {
-          tableNumber = (index + 1);
+        if (table?.tableNumber !== index + 1) {
+          tableNumber = index + 1;
           break;
         }
       }
@@ -102,8 +103,8 @@ export class TableService {
     const requestId = uuidv4();
     await this.tableQueue.add(
       'join-table',
-      {...user, id: requestId},
-      {removeOnComplete: true},
+      { ...user, id: requestId },
+      { removeOnComplete: true },
     );
     console.log(`Created Join Table Request ${requestId}`);
     return requestId;

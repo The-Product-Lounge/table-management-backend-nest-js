@@ -3,7 +3,7 @@ export interface AppConfig {
     host: string;
     port: number;
     password: string;
-  }
+  };
   firebase: {
     projectId: string;
     privateKey: string;

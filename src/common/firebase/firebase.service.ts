@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
-import {AppConfigService} from "../app-config/app-config.service";
-import {Injectable} from "@nestjs/common";
+import { AppConfigService } from '../app-config/app-config.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FirebaseService {
