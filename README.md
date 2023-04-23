@@ -1,3 +1,5 @@
+[![Google Docs](https://img.shields.io/badge/Technical_Design-blue)](https://docs.google.com/document/d/1n0CQo3C8r4AS0vM6LLfNjVbuGUfUIg9WLWCVhMD_H_Y/edit?usp=sharing)
+
 # MySeat - A mobile seating app
 
 <img src ="https://res.cloudinary.com/table-management/image/upload/v1679467183/%D7%A6%D7%99%D7%9C%D7%95%D7%9D_%D7%9E%D7%A1%D7%9A_2023-03-22_083930_xo7rzo.png" height="800px" alt="Main page image"/>
