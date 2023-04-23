@@ -11,9 +11,6 @@ import { BullModule } from '@nestjs/bull';
     FirebaseModule,
     DbModule,
     ConfigModule.forRoot({
-      envFilePath: `${process.cwd()}/configurations/${
-        process.env.NODE_ENV
-      }.env`,
       isGlobal: true,
     }),
     BullModule.forRootAsync({
