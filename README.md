@@ -1,4 +1,4 @@
-[![Google Docs](https://img.shields.io/badge/Technical_Design-blue)](https://docs.google.com/document/d/1n0CQo3C8r4AS0vM6LLfNjVbuGUfUIg9WLWCVhMD_H_Y/edit?usp=sharing)
+[![Technical Design](https://img.shields.io/badge/Technical_Design-blue)](https://docs.google.com/document/d/1OQT7aYxXnBYctdDHmCh2owBe22MhLDYvWf6jyU8wQds/edit?usp=sharing)
 
 # MySeat - A mobile seating app
 
