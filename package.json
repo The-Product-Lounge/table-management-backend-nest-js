@@ -87,6 +87,10 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "*.ts": ["eslint --cache --fix","prettier --write"]
+    "{src,test}/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
+    ],
+    "*": "prettier --write --ignore-unknown"
   }
 }
