@@ -1,9 +1,9 @@
-import {Global, Module} from '@nestjs/common';
-import {ConfigModule} from '@nestjs/config';
-import {AppConfigService} from "./app-config/app-config.service";
-import {FirebaseModule} from "./firebase/firebase.module";
-import {DbModule} from "./db/db.module";
-import {BullModule} from "@nestjs/bull";
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppConfigService } from './app-config/app-config.service';
+import { FirebaseModule } from './firebase/firebase.module';
+import { DbModule } from './db/db.module';
+import { BullModule } from '@nestjs/bull';
 
 @Global()
 @Module({
@@ -11,7 +11,6 @@ import {BullModule} from "@nestjs/bull";
     FirebaseModule,
     DbModule,
     ConfigModule.forRoot({
-      envFilePath: `${process.cwd()}/configurations/${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
     BullModule.forRootAsync({
@@ -24,5 +23,4 @@ import {BullModule} from "@nestjs/bull";
   providers: [AppConfigService],
   exports: [AppConfigService, FirebaseModule, DbModule],
 })
-export class CommonModule {
-}
+export class CommonModule {}

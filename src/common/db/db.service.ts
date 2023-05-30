@@ -1,5 +1,5 @@
-import {FirebaseService} from '../firebase/firebase.service';
-import {Injectable} from '@nestjs/common';
+import { FirebaseService } from '../firebase/firebase.service';
+import { Injectable } from '@nestjs/common';
 import * as firebase from 'firebase';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class DbService {
       }
       const entityArray = [];
       for (const [id, value] of Object.entries(data)) {
-        entityArray.push({id, ...(value as object)});
+        entityArray.push({ id, ...(value as object) });
       }
       if (orderBy) {
         entityArray.sort((a, b) => a[orderBy] - b[orderBy]);

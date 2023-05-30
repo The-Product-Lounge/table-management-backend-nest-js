@@ -1,11 +1,8 @@
-import {Module} from '@nestjs/common';
-import {TableModule} from "./table/table.module";
-import {CommonModule} from "./common/common.module";
+import { Module } from '@nestjs/common';
+import { TableModule } from './table/table.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
-  imports: [
-    TableModule,
-    CommonModule,
-  ],
+  imports: [TableModule, CommonModule],
 })
 export class AppModule {}

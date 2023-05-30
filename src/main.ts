@@ -1,7 +1,7 @@
-import {ValidationPipe} from '@nestjs/common';
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
-import {AppConfigService} from "./common/app-config/app-config.service";
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { AppConfigService } from './common/app-config/app-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -39,7 +39,8 @@ async function bootstrap() {
       credentials: true,
     };
   }
-  const configService: AppConfigService = app.get<AppConfigService>(AppConfigService);
+  const configService: AppConfigService =
+    app.get<AppConfigService>(AppConfigService);
   app.enableCors(corsOptions);
   await app.listen(configService.config.servicePort);
 }
