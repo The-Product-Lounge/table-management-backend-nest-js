@@ -12,4 +12,5 @@ export interface AppConfig {
   };
   servicePort: number;
   adminPassword: string;
+  jwtSecret: string;
 }
