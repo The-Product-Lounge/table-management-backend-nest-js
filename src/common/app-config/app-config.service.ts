@@ -20,6 +20,7 @@ export class AppConfigService {
         url: this.configService.get<string>('FIREBASE_DATABASE_URL'),
       },
       servicePort: this.configService.get<number>('PORT') ?? 3030,
+      adminPassword: this.configService.get<string>('ADMIN_PASSWORD'),
     };
   }
 }
