@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfigService } from '../app-config/app-config.service';
 
@@ -11,7 +11,7 @@ export class AuthService {
 
   async login(pass: any) {
     if (pass !== this.appConfigService.config.adminPassword) {
-      return null;
+      throw new UnauthorizedException();
     }
     const payload = { sub: 1 };
     return {
