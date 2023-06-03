@@ -17,7 +17,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() body: { pass: string }) {
-    console.log('body', body);
     return this.authService.login(body.pass);
   }
 

@@ -10,7 +10,7 @@ export class AuthService {
   ) {}
 
   async login(pass: any) {
-    if (pass !== this.appConfigService.config.adminPassword) {
+    if (pass !== this.appConfigService.config?.adminPassword) {
       throw new UnauthorizedException();
     }
     const payload = { sub: 1 };
