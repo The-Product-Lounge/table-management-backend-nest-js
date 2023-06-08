@@ -3,18 +3,13 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfigService } from '../app-config/app-config.service';
-import { CanActivate, UnauthorizedException } from '@nestjs/common';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UnauthorizedException } from '@nestjs/common';
 
 const mockJwtService = {
   sign: () => 'mock-token',
 };
 
-const mockAppConfigService = {
-  // mock implementation
-};
-const mockJwtAuthGuard: CanActivate = { canActivate: jest.fn(() => true) };
-
+const mockAppConfigService = {};
 describe('AuthController', () => {
   let authController: AuthController;
   let authService: AuthService;
@@ -27,10 +22,7 @@ describe('AuthController', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: AppConfigService, useValue: mockAppConfigService },
       ],
-    })
-      .overrideGuard(JwtAuthGuard)
-      .useValue(mockJwtAuthGuard)
-      .compile();
+    }).compile();
 
     authController = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
@@ -42,26 +34,26 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should return a JWT token', async () => {
-      const pass = 'password';
+      const user = { username: 'user', userId: 1 };
       const token = 'jwt-token';
 
       jest
         .spyOn(authService, 'login')
         .mockImplementationOnce(async () => ({ access_token: token }));
 
-      expect(await authController.login({ pass })).toStrictEqual({
+      expect(await authController.login(user)).toStrictEqual({
         access_token: token,
       });
-      expect(authService.login).toHaveBeenCalledWith(pass);
+      expect(authService.login).toHaveBeenCalledWith(user);
     });
 
     it("should return an error if login doesn't work", async () => {
-      const body = { pass: 'incorrect_password' };
+      const user = { username: 'user', userId: 1 };
       jest
         .spyOn(authService, 'login')
         .mockRejectedValueOnce(new UnauthorizedException());
       try {
-        await authController.login(body);
+        await authController.login(user);
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(UnauthorizedException);

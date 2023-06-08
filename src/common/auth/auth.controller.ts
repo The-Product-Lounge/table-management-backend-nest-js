@@ -16,7 +16,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() body: { pass: string }) {
-    return this.authService.login(body.pass);
+  async login(@Body() body: { username: string; userId: number }) {
+    return this.authService.login(body);
   }
 }

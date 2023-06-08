@@ -14,16 +14,13 @@ export class AuthService {
       username === this.appConfigService.config?.adminEmail &&
       pass === this.appConfigService.config?.adminPassword
     ) {
-      return { userId: 1, username: 'admin' };
+      return { userId: 1, username: username };
     }
     return null;
   }
 
-  async login(pass: any) {
-    if (pass !== this.appConfigService.config?.adminPassword) {
-      throw new UnauthorizedException();
-    }
-    const payload = { sub: 1 };
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
     return {
       access_token: this.jwtService.sign(payload),
     };
