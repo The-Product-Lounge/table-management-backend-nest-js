@@ -23,5 +23,5 @@
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.prettierPath": "./node_modules/prettier",
-  "cSpell.words": ["nestjs", "websockets"]
+  "cSpell.words": ["nestjs", "websockets", "wrongpassword", "wrongusername"]
 }
