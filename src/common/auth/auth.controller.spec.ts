@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfigService } from '../app-config/app-config.service';
 import { CanActivate, UnauthorizedException } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 const mockJwtService = {
   sign: () => 'mock-token',

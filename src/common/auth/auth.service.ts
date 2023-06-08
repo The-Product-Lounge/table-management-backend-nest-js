@@ -9,6 +9,16 @@ export class AuthService {
     private readonly appConfigService: AppConfigService,
   ) {}
 
+  async validateUser(username: string, pass: string): Promise<any> {
+    if (
+      username === this.appConfigService.config?.adminEmail &&
+      pass === this.appConfigService.config?.adminPassword
+    ) {
+      return { userId: 1, username: 'admin' };
+    }
+    return null;
+  }
+
   async login(pass: any) {
     if (pass !== this.appConfigService.config?.adminPassword) {
       throw new UnauthorizedException();
