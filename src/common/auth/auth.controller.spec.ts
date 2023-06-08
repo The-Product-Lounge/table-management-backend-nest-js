@@ -40,13 +40,6 @@ describe('AuthController', () => {
     expect(authController).toBeDefined();
   });
 
-  describe('isLogged', () => {
-    it('should return true', async () => {
-      const result = await authController.isLogged();
-      expect(result).toBe(true);
-    });
-  });
-
   describe('login', () => {
     it('should return a JWT token', async () => {
       const pass = 'password';
