@@ -11,4 +11,7 @@ export interface AppConfig {
     url: string;
   };
   servicePort: number;
+  adminPassword: string;
+  adminEmail: string;
+  jwtSecret: string;
 }

@@ -4,6 +4,7 @@ import { AppConfigService } from './app-config/app-config.service';
 import { FirebaseModule } from './firebase/firebase.module';
 import { DbModule } from './db/db.module';
 import { BullModule } from '@nestjs/bull';
+import { AuthModule } from './auth/auth.module';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { BullModule } from '@nestjs/bull';
       }),
       inject: [AppConfigService],
     }),
+    AuthModule,
   ],
   providers: [AppConfigService],
   exports: [AppConfigService, FirebaseModule, DbModule],
