@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { DbService } from 'src/common/db/db.service';
 
 @Injectable()
 export class EventService {
-  create(createEventDto: CreateEventDto) {
+  constructor(private readonly dbService: DbService) {}
+
+  async create(createEventDto: CreateEventDto) {
+    await this.dbService.add('events', createEventDto);
     return 'This action adds a new event';
   }
 
