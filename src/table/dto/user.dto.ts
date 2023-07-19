@@ -16,6 +16,7 @@ export class UserDto {
     'Design & Composition',
     'Planning & Research',
     'Brainstorming',
+    'Product Manager',
   ])
   @IsOptional()
   portfolioStage: string;
