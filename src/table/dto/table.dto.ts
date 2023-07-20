@@ -11,6 +11,10 @@ import {
 import { UserWithIdDto } from './user.dto';
 
 export class TableDto {
+  @IsString()
+  @IsNotEmpty()
+  eventId: string;
+
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({ each: true })
@@ -37,4 +41,7 @@ export class TableWithIdDto extends TableDto {
   @IsString()
   @IsNotEmpty()
   id: string;
+
+  @IsString()
+  userId: string;
 }

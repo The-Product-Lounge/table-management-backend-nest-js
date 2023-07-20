@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bull';
 import { EventService } from 'src/event/event.service';
+import { UpdateEventDto } from 'src/event/dto/update-event.dto';
 
 @Injectable()
 export class TableService {
@@ -42,8 +43,31 @@ export class TableService {
     }
   }
 
+  async removeUserFromTable(table: TableWithIdDto): Promise<void> {
+    await this.dbService.update('tables', table.id, table);
+    const event = (await this.eventService.findOne(table.eventId)) as any;
+    const eventUpdate = { ...event };
+    eventUpdate.loungersNum = event.loungersNum ? event.loungersNum - 1 : 0;
+    this.eventService.update(table.eventId, eventUpdate);
+    await this.dbService.delete(`events/${table.eventId}/uuids`, table.userId);
+  }
+
   async delete(id: string): Promise<void> {
     try {
+      const table = (await this.dbService.simpleQuery(`tables/${id}`)) as any;
+      const event = (await this.eventService.findOne(table.eventId)) as any;
+      const eventUpdate = { ...event };
+      // console.log(table);
+      eventUpdate.loungersNum = event.loungersNum
+        ? event.loungersNum - table.users.length
+        : 0;
+      eventUpdate.tableIds = event.tableIds.filter((tableId) => tableId !== id);
+      const uuids = table.users.map((user) => user.id);
+      uuids.forEach((uuid) => {
+        delete eventUpdate.uuids[uuid];
+      });
+      await this.eventService.update(table.eventId, eventUpdate);
+
       await this.dbService.delete('tables', id);
     } catch (err) {
       throw err;
@@ -65,11 +89,10 @@ export class TableService {
     delete user.portfolioStage;
     console.log('Getting Tables and Events');
     const tables = await this.getAll();
-    const events = await this.eventService.findAll();
+    const event = (await this.eventService.findOne(user.eventId)) as any;
     console.log(
       `Looking For Table with portfolioStage: ${portfolioStage} in event: ${user.eventId}`,
     );
-    const event = events.find((event) => event.id === user.eventId);
     if (!event) {
       throw new Error(`Event ${user.eventId} not found`);
     }
@@ -77,7 +100,7 @@ export class TableService {
     const eventId = user.eventId;
 
     const tempUser = { ...user };
-    delete tempUser.eventId;
+    delete user.eventId;
     const table = tables.find(
       (arrayTable) =>
         arrayTable.portfolioStage === portfolioStage &&
@@ -90,12 +113,22 @@ export class TableService {
       console.log(
         `Table not found for ${portfolioStage} setting new table number`,
       );
-      const tableNumber = event.tableIds ? event.tableIds.length + 1 : 1;
+      let tableNumber;
+      for (let index = 0; index < tables.length; index++) {
+        const table = tables[index];
+        if (table?.tableNumber !== index + 1) {
+          tableNumber = index + 1;
+          break;
+        }
+      }
+      if (!tableNumber)
+        tableNumber = event.tableIds ? event.tableIds.length + 1 : 1;
 
       const newTable = {
         users: [tempUser],
         portfolioStage,
         tableNumber,
+        eventId,
       };
       console.log(`New Table ${JSON.stringify(newTable)}`);
       tableId = await this.dbService.add('tables', newTable);

@@ -30,6 +30,16 @@ export class DbService {
     }
   }
 
+  async simpleQuery(nodeName: string) {
+    try {
+      const snapshot = await this.db.ref(nodeName).once('value');
+      const data = await snapshot.val();
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async update(nodeName: string, key: string, value: any) {
     const updates = {};
     updates[`/${nodeName}/${key}`] = value;

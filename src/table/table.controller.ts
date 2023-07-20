@@ -25,6 +25,11 @@ export class TableController {
     return this.tableService.update(dto);
   }
 
+  @Put('/remove/:id')
+  removeUser(@Body() dto: TableWithIdDto) {
+    return this.tableService.removeUserFromTable(dto);
+  }
+
   @Delete('/delete-tables')
   deleteAll() {
     return this.tableService.deleteAll();

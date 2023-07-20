@@ -16,8 +16,8 @@ export class EventService {
     return this.dbService.query('events');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} event`;
+  findOne(id: string) {
+    return this.dbService.simpleQuery(`events/${id}`);
   }
 
   async update(id: string, updateEventDto: UpdateEventDto) {
