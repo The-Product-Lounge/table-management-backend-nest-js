@@ -18,6 +18,7 @@ export class TableConsumer {
           e.message,
         )}, job:${JSON.stringify(job)}`,
       );
+      await this.tableService.failed(job.data);
       await job.moveToFailed(e.messag);
     }
   }

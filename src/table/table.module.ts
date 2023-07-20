@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { TableController } from './table.controller';
 import { TableService } from './table.service';
 import { TableConsumer } from './table-consumer';
+import { EventService } from 'src/event/event.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { TableConsumer } from './table-consumer';
     DbModule,
   ],
   controllers: [TableController],
-  providers: [TableService, TableConsumer],
+  providers: [TableService, TableConsumer, EventService],
 })
 export class TableModule {}
