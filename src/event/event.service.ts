@@ -13,14 +13,15 @@ export class EventService {
   }
 
   findAll() {
-    return `This action returns all event`;
+    return this.dbService.query('events');
   }
 
   findOne(id: number) {
     return `This action returns a #${id} event`;
   }
 
-  update(id: number, updateEventDto: UpdateEventDto) {
+  update(id: string, updateEventDto: UpdateEventDto) {
+    this.dbService.update('events', id, updateEventDto);
     return `This action updates a #${id} event`;
   }
 

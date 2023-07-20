@@ -3,6 +3,10 @@ import { IsString, IsNotEmpty, IsIn, IsOptional } from 'class-validator';
 export class UserDto {
   @IsString()
   @IsNotEmpty()
+  eventId: string;
+
+  @IsString()
+  @IsNotEmpty()
   firstName: string;
 
   @IsString()

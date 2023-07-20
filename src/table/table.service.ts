@@ -5,12 +5,14 @@ import { UserDto, UserWithIdDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bull';
+import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class TableService {
   constructor(
     private dbService: DbService,
     @InjectQueue('table') private readonly tableQueue: Queue,
+    private readonly eventService: EventService,
   ) {}
 
   async getAll(): Promise<TableWithIdDto[]> {
@@ -53,9 +55,13 @@ export class TableService {
     console.log('entered join table');
     const { portfolioStage } = user;
     delete user.portfolioStage;
-    console.log('Getting Tables');
+    console.log('Getting Tables and Events');
     const tables = await this.getAll();
-    console.log(`Looking For Table with portfolioStage: ${portfolioStage}`);
+    const events = await this.eventService.findAll();
+    console.log(
+      `Looking For Table with portfolioStage: ${portfolioStage} in event: ${user.eventId}`,
+    );
+    const event = events.find((event) => event.id === user.eventId);
     const table = tables.find(
       (arrayTable) =>
         arrayTable.portfolioStage === portfolioStage &&
@@ -68,18 +74,7 @@ export class TableService {
       console.log(
         `Table not found for ${portfolioStage} setting new table number`,
       );
-      let tableNumber;
-      for (let index = 0; index < tables.length; index++) {
-        const table = tables[index];
-        if (table?.tableNumber !== index + 1) {
-          tableNumber = index + 1;
-          break;
-        }
-      }
-
-      if (!tableNumber) {
-        tableNumber = tables.length > 0 ? tables.length + 1 : 1;
-      }
+      const tableNumber = event.tableIds ? event.tableIds.length + 1 : 1;
 
       const newTable = {
         users: [user],
@@ -94,6 +89,10 @@ export class TableService {
       delete table.id;
       await this.dbService.update('tables', tableId, table);
     }
+    await this.eventService.update(user.eventId, {
+      ...event,
+      tableIds: [...event.tableIds, tableId],
+    });
     await this.dbService.update('uuids', user.id, tableId);
     console.log('exited join table');
     return tableId;
