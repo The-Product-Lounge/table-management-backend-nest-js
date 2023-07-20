@@ -20,8 +20,9 @@ export class EventService {
     return `This action returns a #${id} event`;
   }
 
-  update(id: string, updateEventDto: UpdateEventDto) {
-    this.dbService.update('events', id, updateEventDto);
+  async update(id: string, updateEventDto: UpdateEventDto) {
+    console.log('update event ', id, ' with ', updateEventDto);
+    await this.dbService.update('events', id, updateEventDto);
     return `This action updates a #${id} event`;
   }
 

@@ -3,4 +3,6 @@ import { CreateEventDto } from './create-event.dto';
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {
   tableIds: string[];
+  loungersNum: number;
+  uuids: string[];
 }

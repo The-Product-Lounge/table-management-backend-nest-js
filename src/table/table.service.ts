@@ -15,6 +15,14 @@ export class TableService {
     private readonly eventService: EventService,
   ) {}
 
+  async failed(user: UserWithIdDto) {
+    await this.dbService.update(
+      `events/${user.eventId}/uuids`,
+      user.id,
+      'error',
+    );
+  }
+
   async getAll(): Promise<TableWithIdDto[]> {
     try {
       const tables = await this.dbService.query('tables', 'tableNumber');
@@ -62,6 +70,14 @@ export class TableService {
       `Looking For Table with portfolioStage: ${portfolioStage} in event: ${user.eventId}`,
     );
     const event = events.find((event) => event.id === user.eventId);
+    if (!event) {
+      throw new Error(`Event ${user.eventId} not found`);
+    }
+
+    const eventId = user.eventId;
+
+    const tempUser = { ...user };
+    delete tempUser.eventId;
     const table = tables.find(
       (arrayTable) =>
         arrayTable.portfolioStage === portfolioStage &&
@@ -77,23 +93,32 @@ export class TableService {
       const tableNumber = event.tableIds ? event.tableIds.length + 1 : 1;
 
       const newTable = {
-        users: [user],
+        users: [tempUser],
         portfolioStage,
         tableNumber,
       };
       console.log(`New Table ${JSON.stringify(newTable)}`);
       tableId = await this.dbService.add('tables', newTable);
     } else {
-      table.users.push(user);
+      table.users.push(tempUser);
       console.log(`Updating Table ${JSON.stringify(table)}`);
       delete table.id;
       await this.dbService.update('tables', tableId, table);
     }
-    await this.eventService.update(user.eventId, {
-      ...event,
-      tableIds: [...event.tableIds, tableId],
-    });
-    await this.dbService.update('uuids', user.id, tableId);
+
+    // Updating event
+    const eventUpdate = { ...event };
+    eventUpdate.loungersNum = event.loungersNum ? event.loungersNum + 1 : 1;
+    if (!eventUpdate.uuids) eventUpdate.uuids = {};
+    eventUpdate.uuids[user.id] = tableId;
+
+    if (!event.tableIds || !event.tableIds.includes(tableId)) {
+      eventUpdate.tableIds = event.tableIds
+        ? [...event.tableIds, tableId]
+        : [tableId];
+    }
+
+    await this.eventService.update(eventId, eventUpdate);
     console.log('exited join table');
     return tableId;
   }
