@@ -17,11 +17,7 @@ export class TableService {
   ) {}
 
   async failed(user: UserWithIdDto) {
-    await this.dbService.update(
-      `events/${user.eventId}/uuids`,
-      user.id,
-      'error',
-    );
+    await this.dbService.update(`uuids/${user.eventId}`, user.id, 'error');
   }
 
   async getAll(): Promise<TableWithIdDto[]> {
@@ -49,7 +45,7 @@ export class TableService {
     const eventUpdate = { ...event };
     eventUpdate.loungersNum = event.loungersNum ? event.loungersNum - 1 : 0;
     this.eventService.update(table.eventId, eventUpdate);
-    await this.dbService.delete(`events/${table.eventId}/uuids`, table.userId);
+    await this.dbService.delete(`uuids/${table.eventId}`, table.userId);
   }
 
   async delete(id: string): Promise<void> {
@@ -62,10 +58,11 @@ export class TableService {
         ? event.loungersNum - table.users.length
         : 0;
       eventUpdate.tableIds = event.tableIds.filter((tableId) => tableId !== id);
-      const uuids = table.users.map((user) => user.id);
-      uuids.forEach((uuid) => {
-        delete eventUpdate.uuids[uuid];
-      });
+      await Promise.all(
+        table.users.map(async (user) => {
+          await this.dbService.delete(`uuids/${table.eventId}`, user.id);
+        }),
+      );
       await this.eventService.update(table.eventId, eventUpdate);
 
       await this.dbService.delete('tables', id);
@@ -142,8 +139,6 @@ export class TableService {
     // Updating event
     const eventUpdate = { ...event };
     eventUpdate.loungersNum = event.loungersNum ? event.loungersNum + 1 : 1;
-    if (!eventUpdate.uuids) eventUpdate.uuids = {};
-    eventUpdate.uuids[user.id] = tableId;
 
     if (!event.tableIds || !event.tableIds.includes(tableId)) {
       eventUpdate.tableIds = event.tableIds
@@ -152,6 +147,7 @@ export class TableService {
     }
 
     await this.eventService.update(eventId, eventUpdate);
+    await this.dbService.update(`uuids/${eventId}`, user.id, tableId);
     console.log('exited join table');
     return tableId;
   }
