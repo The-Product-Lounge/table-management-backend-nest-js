@@ -42,4 +42,10 @@ export class EventController {
   remove(@Param('id') id: string) {
     return this.eventService.remove(+id);
   }
+
+  @Delete(':id/tables')
+  removeTables(@Param('id') id: string) {
+    console.log('remove tables');
+    return this.eventService.removeTables(id);
+  }
 }

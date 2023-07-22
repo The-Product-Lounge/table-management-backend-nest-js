@@ -30,4 +30,20 @@ export class EventService {
   remove(id: number) {
     return `This action removes a #${id} event`;
   }
+
+  async removeTables(id: string) {
+    const event = await this.dbService.simpleQuery(`events/${id}`);
+    if (!event.tableIds) {
+      return `There is not tables in #${id} event`;
+    }
+    delete event.loungersNum;
+    event.tableIds.map(async (tableId) => {
+      const table = await this.dbService.delete(`tables`, tableId);
+      console.log('deleted table ', table);
+    });
+    event.tableIds = [];
+    await this.dbService.delete(`uuids`, id);
+    await this.dbService.update(`events`, id, event);
+    return `This action removes all tables from #${id} event`;
+  }
 }
