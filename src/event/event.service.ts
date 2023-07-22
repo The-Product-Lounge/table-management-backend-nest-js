@@ -8,6 +8,7 @@ export class EventService {
   constructor(private readonly dbService: DbService) {}
 
   async create(createEventDto: CreateEventDto) {
+    console.log('create event ', createEventDto);
     await this.dbService.add('events', createEventDto);
     return 'This action adds a new event';
   }

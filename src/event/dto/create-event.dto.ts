@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Timestamp } from 'firebase/firestore';
 
 export class CreateEventDto {
@@ -8,9 +8,11 @@ export class CreateEventDto {
   title: string;
 
   @Transform(({ value }) => Timestamp.fromDate(new Date(value)))
+  @IsOptional()
   date: Timestamp;
 
   @Transform(({ value }) => Timestamp.fromDate(new Date(value)))
+  @IsOptional()
   time: Timestamp;
 
   @IsString()
