@@ -27,7 +27,18 @@ export class EventService {
     return `This action updates a #${id} event`;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    console.log('remove event ', id);
+    const event = await this.findOne(id);
+    if (!event) {
+      return `There is not event with id #${id}`;
+    }
+    event.tableIds?.map(async (tableId) => {
+      const table = await this.dbService.delete(`tables`, tableId);
+      console.log('deleted table ', table);
+    });
+    this.dbService.delete('events', id);
+    this.dbService.delete('uuids', id);
     return `This action removes a #${id} event`;
   }
 
