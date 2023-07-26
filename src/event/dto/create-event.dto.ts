@@ -7,11 +7,17 @@ export class CreateEventDto {
   @IsNotEmpty()
   title: string;
 
-  @Transform(({ value }) => Timestamp.fromDate(new Date(value)))
+  @Transform(({ value }) => {
+    if (value === '') return null;
+    Timestamp.fromDate(new Date(value));
+  })
   @IsOptional()
   date: Timestamp;
 
-  @Transform(({ value }) => Timestamp.fromDate(new Date(value)))
+  @Transform(({ value }) => {
+    if (value === '') return null;
+    Timestamp.fromDate(new Date(value));
+  })
   @IsOptional()
   time: Timestamp;
 
