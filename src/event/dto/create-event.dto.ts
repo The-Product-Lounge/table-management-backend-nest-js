@@ -9,14 +9,14 @@ export class CreateEventDto {
 
   @Transform(({ value }) => {
     if (value === '') return null;
-    Timestamp.fromDate(new Date(value));
+    return Timestamp.fromDate(new Date(value));
   })
   @IsOptional()
   date: Timestamp;
 
   @Transform(({ value }) => {
     if (value === '') return null;
-    Timestamp.fromDate(new Date(value));
+    return Timestamp.fromDate(new Date(value));
   })
   @IsOptional()
   time: Timestamp;
